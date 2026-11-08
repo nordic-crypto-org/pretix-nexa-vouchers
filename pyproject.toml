@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pretix-nexa-vouchers"
+version = "0.1.0"
+description = "pretix plugin that issues pretix vouchers and Nexa testnet tokens, with a community voucher queue."
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.11"
+authors = [{ name = "Nordic Crypto" }]
+keywords = ["pretix", "nexa", "vouchers"]
+classifiers = [
+    "Framework :: Django",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "pretix>=2025.7",
+    "segno>=1.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-django>=4.8",
+    "ruff>=0.6",
+]
+
+[project.entry-points."pretix.plugin"]
+pretix_nexa_vouchers = "pretix_nexa_vouchers:PretixPluginMeta"
+
+[tool.setuptools.packages.find]
+include = ["pretix_nexa_vouchers*"]
+
+[tool.setuptools.package-data]
+pretix_nexa_vouchers = ["templates/**/*.html"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "pretix.testutils.settings"
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]

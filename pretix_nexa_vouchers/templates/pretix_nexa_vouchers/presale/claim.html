@@ -1,0 +1,30 @@
+{% extends "pretixpresale/event/base.html" %}
+{% load i18n %}
+{% load eventurl %}
+{% block title %}{% trans "Claim a Nexa voucher" %}{% endblock %}
+{% block content %}
+    <h2>{% trans "Claim a Nexa voucher" %}</h2>
+    <p>{% trans "Sign the message below with the wallet that currently holds the token. The shop checks the signature with the testnet node and checks that the address still holds the token." %}</p>
+    <pre>{{ links.message }}</pre>
+    <p><code>{{ links.voucher_present_uri }}</code></p>
+    <img src="{% eventurl request.event "plugins:pretix_nexa_vouchers:qr" %}?kind=tdpp&amp;id={{ issued.public_id }}" alt="{% trans "QR code for the wallet present link" %}">
+    {% if result %}
+        <h3>{% trans "Voucher code" %}</h3>
+        <p><code>{{ result.voucher_code }}</code></p>
+        <p><a href="{{ result.redeem_url }}">{% trans "Continue to the shop with this voucher" %}</a></p>
+    {% else %}
+        <form method="post">
+            {% csrf_token %}
+            <p>
+                <label for="address">{% trans "Address that holds the token" %}</label>
+                <input id="address" name="address" required>
+            </p>
+            <p>
+                <label for="signature">{% trans "Signature" %}</label>
+                <textarea id="signature" name="signature" required></textarea>
+            </p>
+            <button type="submit">{% trans "Claim" %}</button>
+        </form>
+    {% endif %}
+    {% include "pretix_nexa_vouchers/footer.html" %}
+{% endblock %}

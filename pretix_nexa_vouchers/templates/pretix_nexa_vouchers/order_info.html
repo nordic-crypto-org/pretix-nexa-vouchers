@@ -1,0 +1,32 @@
+{% load i18n %}
+<div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">{% trans "Nexa vouchers" %}</h3></div>
+    <div class="panel-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Token" %}</th>
+                    <th>{% trans "Code" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row.get_status_display }}</td>
+                        <td><code>{{ row.subgroup_id|default:"—" }}</code></td>
+                        <td>
+                            {% if row.voucher and row.status == "issued" and row.holder_address == row.issuer_address %}
+                                <code>{{ row.voucher.code }}</code>
+                            {% elif row.voucher %}
+                                {% trans "Hidden after the token moved." %}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

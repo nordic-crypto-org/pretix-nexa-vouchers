@@ -1,0 +1,30 @@
+{% extends "pretixcontrol/event/settings_base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block title %}{% trans "Nexa vouchers" %}{% endblock %}
+{% block inside %}
+    <h2>{% trans "Nexa vouchers" %}</h2>
+    {% if mainnet_allowed %}
+        <div class="alert alert-danger">
+            {% trans "Mainnet is not cleared. The process flag is on anyway. Prefer testnet." %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            {% trans "Testnet only. Node URL, RPC user, and RPC password come from the environment, not from this form. Mainnet is not cleared." %}
+        </div>
+    {% endif %}
+    <form method="post" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout="horizontal" %}
+        <div class="form-group">
+            <label class="col-md-3 control-label">{% trans "Queue organiser token" %}</label>
+            <div class="col-md-9">
+                <input class="form-control" readonly value="{{ queue_token }}">
+                <p class="help-block">{% trans "Give this to the Wally organiser out of band. It authorises assign-next and confirm-transfer. Rotating it invalidates the previous token." %}</p>
+            </div>
+        </div>
+        <div class="form-group submit-group">
+            <button type="submit" class="btn btn-primary btn-save">{% trans "Save" %}</button>
+        </div>
+    </form>
+{% endblock %}
