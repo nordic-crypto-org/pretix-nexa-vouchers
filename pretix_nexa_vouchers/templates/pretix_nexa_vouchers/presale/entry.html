@@ -1,0 +1,27 @@
+{% extends "pretixpresale/event/base.html" %}
+{% load i18n %}
+{% load eventurl %}
+{% block title %}{% trans "Your place in the queue" %}{% endblock %}
+{% block content %}
+    <h2>{{ voucher_list.name }}</h2>
+    <p>{% trans "Name" %}: {{ entry.display_name }}</p>
+    <p>{% trans "Status" %}: {{ entry.get_status_display }}</p>
+    {% if payload.position %}
+        <p>{% blocktrans with position=payload.position %}You are number {{ position }} among people still waiting.{% endblocktrans %}</p>
+    {% endif %}
+    {% if entry.status == "waiting" %}
+        <form method="post" action="{% eventurl request.event "plugins:pretix_nexa_vouchers:queue.address" slug=voucher_list.slug public_id=entry.public_id %}">
+            {% csrf_token %}
+            <label for="nexa_address">{% trans "Nexa testnet address" %}</label>
+            <input id="nexa_address" name="nexa_address" value="{{ entry.nexa_address }}" required>
+            <button type="submit">{% trans "Save address" %}</button>
+        </form>
+    {% endif %}
+    {% if claim %}
+        <h3>{% trans "Claim the voucher" %}</h3>
+        <p>{% trans "After the token arrives in your wallet, open the claim page and sign the challenge." %}</p>
+        <p><a href="{{ claim.callback_url }}">{{ claim.callback_url }}</a></p>
+        <img src="{% eventurl request.event "plugins:pretix_nexa_vouchers:qr" %}?kind=claim&amp;id={{ entry.issued.public_id }}" alt="{% trans "QR code for the claim page" %}">
+    {% endif %}
+    {% include "pretix_nexa_vouchers/footer.html" %}
+{% endblock %}

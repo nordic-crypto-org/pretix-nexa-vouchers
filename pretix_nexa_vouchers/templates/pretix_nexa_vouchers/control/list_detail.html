@@ -1,0 +1,37 @@
+{% extends "pretixcontrol/event/base.html" %}
+{% load i18n %}
+{% block title %}{{ voucher_list.name }}{% endblock %}
+{% block content %}
+    <h1>{{ voucher_list.name }}</h1>
+    <p>{{ voucher_list.description }}</p>
+    <p>
+        {% trans "Organiser address" %}: <code>{{ voucher_list.organiser_address|default:"—" }}</code><br>
+        {% trans "Join link" %}: <a href="{{ join.callback_url }}">{{ join.callback_url }}</a><br>
+        {% trans "Wally queue-join URI" %}: <code>{{ join.queue_join_uri }}</code>
+    </p>
+    <p>
+        <img src="{% url "plugins:pretix_nexa_vouchers:qr" organizer=request.organizer.slug event=request.event.slug %}?kind=join&amp;list={{ voucher_list.slug }}" alt="{% trans "QR code for the queue-join link" %}">
+    </p>
+    {% if can_assign %}
+        <form method="post" action="{% url "plugins:pretix_nexa_vouchers:list.assign" organizer=request.organizer.slug event=request.event.slug slug=voucher_list.slug %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">{% trans "Assign the next waiting person" %}</button>
+        </form>
+    {% endif %}
+    <h2>{% trans "Queue" %}</h2>
+    {% for entry in entries %}
+        <article>
+            <h3>{{ entry.display_name }} — {{ entry.status }}{% if entry.position %} ({% blocktrans with position=entry.position %}position {{ position }}{% endblocktrans %}){% endif %}</h3>
+            <p>{% trans "Address" %}: <code>{{ entry.nexa_address|default:"—" }}</code></p>
+            {% if entry.assigned_voucher %}
+                <p>{% trans "Token" %}: <code>{{ entry.assigned_voucher.subgroup_id }}</code></p>
+                {% if entry.assigned_voucher.token_send_uri %}
+                    <p>{% trans "Send this token from Wally" %}: <code>{{ entry.assigned_voucher.token_send_uri }}</code></p>
+                    <img src="{% url "plugins:pretix_nexa_vouchers:qr" organizer=request.organizer.slug event=request.event.slug %}?kind=send&amp;list={{ voucher_list.slug }}&amp;entry={{ entry.public_id }}" alt="{% trans "QR code for the token send" %}">
+                {% endif %}
+            {% endif %}
+        </article>
+    {% empty %}
+        <p>{% trans "Nobody is in this list yet." %}</p>
+    {% endfor %}
+{% endblock %}

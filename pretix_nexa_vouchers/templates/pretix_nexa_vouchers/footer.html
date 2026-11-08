@@ -1,0 +1,9 @@
+{% load i18n %}
+<p class="nexa-vouchers-source">
+    {% if source_url %}
+        <a href="{{ source_url }}">{% trans "Source code for the Nexa vouchers plugin" %}</a>
+    {% else %}
+        {% trans "Source code for the Nexa vouchers plugin is available from the operator under the GNU AGPL-3.0." %}
+    {% endif %}
+    {% trans "Maintained by Nordic Crypto. Nexa is a separate network." %}
+</p>

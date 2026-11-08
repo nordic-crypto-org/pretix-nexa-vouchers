@@ -1,0 +1,18 @@
+{% extends "pretixpresale/event/base.html" %}
+{% load i18n %}
+{% load eventurl %}
+{% block title %}{% trans "Voucher lists" %}{% endblock %}
+{% block content %}
+    <h2>{% trans "Voucher lists" %}</h2>
+    <p>{% trans "Community queues hand out voucher tokens. Join a list, then wait for the organiser to send the next token." %}</p>
+    {% if lists %}
+        <ul>
+            {% for row in lists %}
+                <li><a href="{% eventurl request.event "plugins:pretix_nexa_vouchers:public.list" slug=row.slug %}">{{ row.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{% trans "No open lists." %}</p>
+    {% endif %}
+    {% include "pretix_nexa_vouchers/footer.html" %}
+{% endblock %}

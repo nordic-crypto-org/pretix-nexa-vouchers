@@ -1,0 +1,55 @@
+{% extends "pretixcontrol/event/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Nexa vouchers" %}{% endblock %}
+{% block content %}
+    <h1>{% trans "Nexa vouchers" %}</h1>
+    {% if mainnet_allowed %}
+        <div class="alert alert-danger">
+            {% trans "NEXA_VOUCHERS_ALLOW_MAINNET is on. Mainnet is not cleared for this plugin." %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            {% blocktrans %}This shop issues tokens on Nexa testnet only. Mainnet is not cleared and the flag defaults off. Current network: {{ network }}.{% endblocktrans %}
+        </div>
+    {% endif %}
+    <p>
+        <a class="btn btn-default" href="{% url "plugins:pretix_nexa_vouchers:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a>
+        <a class="btn btn-primary" href="{% url "plugins:pretix_nexa_vouchers:list.create" organizer=request.organizer.slug event=request.event.slug %}">{% trans "New voucher list" %}</a>
+    </p>
+    <h2>{% trans "Voucher lists" %}</h2>
+    {% if lists %}
+        <ul>
+            {% for row in lists %}
+                <li>
+                    <a href="{% url "plugins:pretix_nexa_vouchers:list.detail" organizer=request.organizer.slug event=request.event.slug slug=row.slug %}">{{ row.name }}</a>
+                    <span class="text-muted">{{ row.slug }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{% trans "No lists yet." %}</p>
+    {% endif %}
+    <h2>{% trans "Issued tokens" %}</h2>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>{% trans "Order" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Subgroup" %}</th>
+                <th>{% trans "Holder" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in issued %}
+                <tr>
+                    <td>{{ row.order.code }}</td>
+                    <td>{{ row.get_status_display }}{% if row.error %} — {{ row.error }}{% endif %}</td>
+                    <td><code>{{ row.subgroup_id|default:"—" }}</code></td>
+                    <td><code>{{ row.holder_address|default:"—" }}</code></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">{% trans "No tokens issued yet." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

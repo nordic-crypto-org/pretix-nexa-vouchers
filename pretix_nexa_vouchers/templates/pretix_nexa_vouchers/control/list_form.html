@@ -1,0 +1,12 @@
+{% extends "pretixcontrol/event/base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block title %}{% trans "New voucher list" %}{% endblock %}
+{% block content %}
+    <h1>{% trans "New voucher list" %}</h1>
+    <form method="post" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout="horizontal" %}
+        <button type="submit" class="btn btn-primary">{% trans "Create list" %}</button>
+    </form>
+{% endblock %}

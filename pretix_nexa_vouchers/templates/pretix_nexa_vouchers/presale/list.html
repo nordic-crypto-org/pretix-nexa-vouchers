@@ -1,0 +1,27 @@
+{% extends "pretixpresale/event/base.html" %}
+{% load i18n %}
+{% load eventurl %}
+{% block title %}{{ voucher_list.name }}{% endblock %}
+{% block content %}
+    <h2>{{ voucher_list.name }}</h2>
+    {% if voucher_list.description %}<p>{{ voucher_list.description }}</p>{% endif %}
+    <p>{% blocktrans with waiting=waiting %}{{ waiting }} people are waiting.{% endblocktrans %}</p>
+    {% if voucher_list.active %}
+        <form method="post" action="{% eventurl request.event "plugins:pretix_nexa_vouchers:queue.join" slug=voucher_list.slug %}">
+            {% csrf_token %}
+            <p>
+                <label for="display_name">{% trans "Name on the list" %}</label>
+                <input id="display_name" name="display_name" maxlength="80" required>
+            </p>
+            <p>
+                <label for="nexa_address">{% trans "Nexa testnet address" %}</label>
+                <input id="nexa_address" name="nexa_address" autocomplete="off">
+            </p>
+            <button type="submit">{% trans "Join the list" %}</button>
+        </form>
+    {% else %}
+        <p>{% trans "This list is closed." %}</p>
+    {% endif %}
+    <p><code>{{ links.queue_join_uri }}</code></p>
+    {% include "pretix_nexa_vouchers/footer.html" %}
+{% endblock %}
